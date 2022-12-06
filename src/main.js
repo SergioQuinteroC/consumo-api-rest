@@ -21,8 +21,10 @@ const lazyLoader = new IntersectionObserver((entries) => {
     });
 });
 
-function createMovies(movies, container, lazyLoad = false) {
-    container.innerHTML = "";
+function createMovies(movies, container, { lazyLoad = false, clean = true }) {
+    if (clean) {
+        container.innerHTML = "";
+    }
 
     movies.forEach((movie) => {
         const movieContainer = document.createElement("div");
@@ -84,7 +86,7 @@ async function getTrendingMoviesPreview() {
     const { data } = await api(`/trending/movie/day`);
     const movies = data.results;
 
-    createMovies(movies, trendingMoviesPreviewList, true);
+    createMovies(movies, trendingMoviesPreviewList, { lazyLoad: true });
 }
 
 async function getCategoriesPreview() {
@@ -94,33 +96,46 @@ async function getCategoriesPreview() {
     createCategories(categories, categoriesPreviewList);
 }
 
-async function getMoviesByCategory(id) {
+async function getMoviesByCategory(id, page = 1) {
     const { data } = await api(`/discover/movie`, {
         params: {
             with_genres: id,
+            page,
         },
     });
     const movies = data.results;
+    maxpage = data.total_pages;
 
-    createMovies(movies, genericSection, true);
+    createMovies(movies, genericSection, { lazyLoad: true, clean: page == 1 });
 }
 
-async function getMoviesBySearch(query) {
+async function getMoviesBySearch(query, page = 1) {
     const { data } = await api(`/search/movie`, {
         params: {
             query,
+            page,
         },
     });
     const movies = data.results;
+    maxpage = data.total_pages;
 
-    createMovies(movies, genericSection, true);
+    createMovies(movies, genericSection, {
+        lazyLoad: true,
+        clean: page == 1,
+    });
 }
 
-async function getTrendingMovies() {
-    const { data } = await api(`/trending/movie/day`);
-    const movies = data.results;
+async function getTrendingMovies(page = 1) {
+    const { data } = await api(`/trending/movie/day`, {
+        params: {
+            page,
+        },
+    });
 
-    createMovies(movies, genericSection, true);
+    const movies = data.results;
+    maxpage = data.total_pages;
+
+    createMovies(movies, genericSection, { lazyLoad: true, clean: page == 1 });
 }
 
 async function getMovieById(id) {
@@ -149,5 +164,5 @@ async function getRelatedMoviesById(id) {
 
     const relatedMovies = data.results;
 
-    createMovies(relatedMovies, relatedMoviesContainer, true);
+    createMovies(relatedMovies, relatedMoviesContainer, { lazyLoad: true });
 }

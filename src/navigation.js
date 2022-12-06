@@ -1,5 +1,10 @@
 let historyArr = [];
 
+let page = 1;
+let maxpage;
+let paramsF;
+let infiniteScroll;
+
 searchFormBtn.addEventListener("click", () => {
     location.hash = "#search=" + searchFormInput.value;
 });
@@ -22,23 +27,57 @@ arrowBtn.addEventListener("click", () => {
 window.addEventListener("DOMContentLoaded", navigator, false);
 window.addEventListener("hashchange", navigator, false);
 
+const scrollBottomReached = () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    return scrollTop + clientHeight >= scrollHeight - 20;
+};
+
+const pageIsNotMax = page < maxpage;
+
+function scrollPage() {
+    if (scrollBottomReached() && !pageIsNotMax) {
+        page++;
+        if (!paramsF) {
+            infiniteScroll(page);
+        } else {
+            infiniteScroll(paramsF, page);
+        }
+    }
+}
+
 function navigator() {
+    if (infiniteScroll) {
+        window.removeEventListener("scroll", scrollPage, { passive: false });
+        paramsF = undefined;
+        infiniteScroll = undefined;
+        page = 1;
+    }
+
     console.log({ location });
     if (location.hash.startsWith("#trends")) {
         trendsPage();
     } else if (location.hash.startsWith("#search=")) {
-        searchPage();
+        const loc = location.hash;
+        const [_, search] = loc.split("=");
+
+        search ? searchPage(search.replaceAll("%20", " ")) : homePage();
     } else if (location.hash.startsWith("#movie=")) {
-        movieDetailsPage();
+        const loc = location.hash;
+        const [_, id] = loc.split("=");
+
+        movieDetailsPage(id);
     } else if (location.hash.startsWith("#category=")) {
-        categoriesPage();
+        const loc = location.hash;
+        const [id, name] = loc.split("=")[1].split("-");
+
+        categoriesPage(id, name.replace("%20", " "));
     } else {
         homePage();
     }
 
     /* document.scroll(0, 0); */
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
+    /* document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0; */
 
     if (
         location.hash.startsWith("#trends") ||
@@ -47,6 +86,10 @@ function navigator() {
         location.hash.startsWith("#category=")
     ) {
         historyArr.push(location.hash);
+    }
+
+    if (infiniteScroll) {
+        window.addEventListener("scroll", scrollPage, false);
     }
 }
 
@@ -69,7 +112,7 @@ function homePage() {
     getTrendingMoviesPreview();
     getCategoriesPreview();
 }
-function categoriesPage() {
+function categoriesPage(id, name) {
     console.log("Categories");
 
     headerSection.classList.remove("header-container--long");
@@ -85,15 +128,14 @@ function categoriesPage() {
     genericSection.classList.remove("inactive");
     movieDetailSection.classList.add("inactive");
 
-    const [, categoryData] = location.hash.split("=");
-    const [categoryId, categoryName] = categoryData.split("-");
-    const newName = decodeURI(categoryName);
+    headerCategoryTitle.innerText = name;
 
-    headerCategoryTitle.innerText = newName;
-    getMoviesByCategory(categoryId);
+    getMoviesByCategory(id);
+    paramsF = id;
+    infiniteScroll = getMoviesByCategory;
 }
 
-function movieDetailsPage() {
+function movieDetailsPage(id) {
     console.log("Pelicula!!!");
 
     headerSection.classList.add("header-container--long");
@@ -111,9 +153,10 @@ function movieDetailsPage() {
 
     const [, movieId] = location.hash.split("=");
 
-    getMovieById(movieId);
+    getMovieById(id);
+    infiniteScroll = () => {};
 }
-function searchPage() {
+function searchPage(search) {
     console.log("Search!!!");
 
     headerSection.classList.remove("header-container--long");
@@ -129,8 +172,9 @@ function searchPage() {
     genericSection.classList.remove("inactive");
     movieDetailSection.classList.add("inactive");
 
-    const [, query] = location.hash.split("=");
-    getMoviesBySearch(query);
+    getMoviesBySearch(search);
+    infiniteScroll = getMoviesBySearch(search);
+    paramsF = search;
 }
 function trendsPage() {
     console.log("Trends");
@@ -151,4 +195,6 @@ function trendsPage() {
     headerCategoryTitle.innerText = "Trending";
 
     getTrendingMovies();
+    infiniteScroll = getTrendingMovies;
+    paramsF = undefined;
 }
