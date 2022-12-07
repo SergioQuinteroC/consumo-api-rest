@@ -1,5 +1,16 @@
 const API_URL = "https://api.themoviedb.org/3";
 
+const lang = localStorage.language;
+lan.value = lang !== "" ? lang : "en";
+
+if (lan.value == "en") {
+    trendingPreviewTitle.innerHTML = "Trends";
+}
+lan.addEventListener("change", () => {
+    localStorage.setItem("language", lan.value);
+    location.reload();
+});
+
 //Data
 const api = axios.create({
     baseURL: API_URL,
@@ -8,6 +19,7 @@ const api = axios.create({
     },
     params: {
         api_key: API_KEY,
+        'language': lan.value,
     },
 });
 

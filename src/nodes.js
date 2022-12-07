@@ -1,6 +1,7 @@
 // Sections
 const headerSection = document.querySelector("#header");
 const trendingPreviewSection = document.querySelector("#trendingPreview");
+const trendingPreviewTitle = document.querySelector(".trendingPreview-title");
 const categoriesPreviewSection = document.querySelector("#categoriesPreview");
 const genericSection = document.querySelector("#genericList");
 const movieDetailSection = document.querySelector("#movieDetail");
@@ -21,7 +22,12 @@ const relatedMoviesContainer = document.querySelector(
 const likedMovieListArticle = document.querySelector(".liked-movieList");
 
 // Elements
+const lan = document.querySelector("#lang");
 const headerTitle = document.querySelector(".header-title");
+const categoriesPreviewTitle = document.querySelector(
+    ".categoriesPreview-title"
+);
+const likedTitle = document.querySelector(".liked-title");
 const arrowBtn = document.querySelector(".header-arrow");
 const headerCategoryTitle = document.querySelector(
     ".header-title--categoryView"

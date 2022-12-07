@@ -96,6 +96,30 @@ function navigator() {
 function homePage() {
     console.log("Home");
 
+    switch (lan.value) {
+        case "en":
+            trendingPreviewTitle.innerHTML = "Trends";
+            trendingBtn.innerHTML = "See more";
+            categoriesPreviewTitle.innerHTML = "Categories";
+            likedTitle.innerHTML = "Favorite movies";
+            break;
+        case "fr":
+            trendingPreviewTitle.innerHTML = "Les tendances";
+            trendingBtn.innerHTML = "Voir plus";
+            categoriesPreviewTitle.innerHTML = "Catégories";
+            likedTitle.innerHTML = "Films préférés";
+            break;
+        case "pt-BR":
+            trendingPreviewTitle.innerHTML = "Tendências";
+            trendingBtn.innerHTML = "Ver mais";
+            categoriesPreviewTitle.innerHTML = "Categorias";
+            likedTitle.innerHTML = "Filmes favoritos";
+            break;
+        default:
+            trendingPreviewTitle.innerHTML = "Tendencias";
+            break;
+    }
+
     headerSection.classList.remove("header-container--long");
     headerSection.style.background = "";
     arrowBtn.classList.add("inactive");

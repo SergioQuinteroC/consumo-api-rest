@@ -92,6 +92,22 @@ button {
     cursor: pointer;
 }
 
+#lang {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: #5c218a solid 0.5px;
+    border-radius: 8px;
+    padding: 3px;
+    background-color: var(--purple-light-1);
+}
+.optLang {
+    background-color: var(--purple-light-2);
+}
+#lang:focus > .optLang:checked {
+    background-color: var(--purple-medium-1);
+}
+
 /* Shared */
 .header-container,
 .trendingPreview-header,
@@ -156,11 +172,11 @@ footer {
 }
 
 .movie-btn--liked::before {
- content: '💜';
+    content: "💜";
 }
 
 .movie-btn--liked {
-  background-color: var(--purple-light-2);
+    background-color: var(--purple-light-2);
 }
 
 .img-responsive {
